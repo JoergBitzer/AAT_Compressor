@@ -1,0 +1,5 @@
+#pragma once
+// Macros for CMAKE
+#define PLUGIN_VERSION_MAJOR @Quetscher_VERSION_MAJOR@
+#define PLUGIN_VERSION_MINOR @Quetscher_VERSION_MINOR@
+#define PLUGIN_VERSION_PATCH @Quetscher_VERSION_PATCH@
