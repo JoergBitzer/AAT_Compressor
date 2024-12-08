@@ -53,6 +53,7 @@ target_sources(ConsoleAppExample
     PRIVATE
         main.cpp
         WaveOut.cpp
+        ../CompressAlgo.cpp
         )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
@@ -86,6 +87,7 @@ target_link_libraries(ConsoleAppExample
     PRIVATE
         # ConsoleAppData            # If you'd created a binary data target, you'd link to it here
         juce::juce_core
+        juce::juce_audio_basics
         juce::juce_audio_processors
     PUBLIC
         juce::juce_recommended_config_flags
