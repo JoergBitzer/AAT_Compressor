@@ -103,6 +103,8 @@ public:
     // some necessary info for the host
     int getLatency(){return m_Latency;};
 
+	float getGainReduction(){m_gainreduction = m_algo.getGainReduction();  return m_gainreduction;};
+
 private:
 	QuetscherAudioProcessor* m_processor;
     int m_Latency = 0;
@@ -133,15 +135,19 @@ private:
 	jade::AudioProcessParameter<float> m_RMSparam;
 	float m_RMS = g_paramRMS.defaultValue;
 
+	float m_gainreduction = 0.f;
+
 };
 
-class QuetscherGUI : public juce::Component
+class QuetscherGUI : public juce::Component, juce::Timer
 {
 public:
 	QuetscherGUI(QuetscherAudioProcessor& p, juce::AudioProcessorValueTreeState& apvts);
-
+	~QuetscherGUI(){stopTimer();};
 	void paint(juce::Graphics& g) override;
 	void resized() override;
+	void timerCallback() override;
+
 private:
 	QuetscherAudioProcessor& m_processor;
     juce::AudioProcessorValueTreeState& m_apvts; 
@@ -167,4 +173,5 @@ private:
 	juce::Slider m_RMSSlider;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_RMSAttachment;
 
+	float m_gainreduction;
 };

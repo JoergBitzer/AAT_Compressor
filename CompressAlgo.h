@@ -24,6 +24,7 @@ public:
     void setReleaseTime_ms(float rel) {m_rel_tau_ms = rel; m_alpha_rel = tau2alpha(m_rel_tau_ms);};
     void setRMSSmoothing_ms(float tau) {m_tau_rms_ms = tau; m_alpha_rms = tau2alpha(m_tau_rms_ms);};
 
+    float getGainReduction(){return m_smoothedgainreduction;};
 
 
 protected:
@@ -52,8 +53,9 @@ protected:
     juce::AudioBuffer<float> m_sidechainsig;
     float m_rmsold = 0.f;
     float m_smoothedgain = 0.f;
+    float m_smoothedgainreduction = 0.f;
 
-    float computeGain(float input)
+    float computeGain(const float input, float &gainreduction)
     {
         float output = 0.f;
         if (input - m_threshold < - m_kneewidth/2.f)
@@ -67,6 +69,7 @@ protected:
         }        
         output += m_processmakeup;
         float gain = output - input;
+        gainreduction = m_processmakeup - gain;
         return gain;
     }
 };

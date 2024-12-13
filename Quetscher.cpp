@@ -262,7 +262,7 @@ QuetscherGUI::QuetscherGUI(QuetscherAudioProcessor& p, juce::AudioProcessorValue
     m_RMSAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(m_apvts, g_paramRMS.ID, m_RMSSlider);
     addAndMakeVisible(m_RMSSlider);
     // m_RatioSlider.onValueChange = [this] {m_IRDisplay.setRatio(m_RatioSlider.getValue());};
-
+    startTimerHz(30);
 }
 
 void QuetscherGUI::paint(juce::Graphics &g)
@@ -274,6 +274,38 @@ void QuetscherGUI::paint(juce::Graphics &g)
     
     juce::String text2display = "Quetscher V " + juce::String(PLUGIN_VERSION_MAJOR) + "." + juce::String(PLUGIN_VERSION_MINOR) + "." + juce::String(PLUGIN_VERSION_PATCH);
     g.drawFittedText (text2display, getLocalBounds(), juce::Justification::bottomLeft, 1);
+
+    //g.setColour (juce::Colours::lightgreen);
+    //g.setFont (20.0f);
+    //g.drawText(juce::String(m_gainreduction),getWidth()-100,100,100,60,juce::Justification::centred);
+
+    // Anzeige zeichnen
+    float scalefactor = m_processor.getScaleFactor();
+    int width = getWidth();
+    int height = getHeight();
+    int xstart = width-scalefactor*50;
+    int ystart = scalefactor*50;
+    int displaywidth = 30*scalefactor;
+    int displayheight = height - (ystart + 20)*scalefactor;
+
+    g.setColour (juce::Colours::darkgrey.darker(0.8));
+    g.fillRect(xstart, ystart,displaywidth,displayheight);     
+
+    // anzeige
+    float maxgainred = 25;
+
+    if (m_gainreduction>5.f)
+        g.setColour (juce::Colours::green.brighter(0.6));
+
+
+    if (m_gainreduction>=maxgainred)
+        m_gainreduction = maxgainred;
+    
+    float gainred_nomalized = m_gainreduction/maxgainred; 
+
+    g.setColour (juce::Colours::green.brighter(0.4));
+    g.fillRect(xstart, ystart,displaywidth,static_cast<int> (displayheight*gainred_nomalized));     
+
 
 }
 
@@ -312,4 +344,10 @@ void QuetscherGUI::resized()
     m_MakeupSwitch.setBounds(startx + 4*(knobwidth + distance_x) ,starty,buttonWidth,buttonHeight);
 
 
+}
+
+void QuetscherGUI::timerCallback()
+{
+    m_gainreduction = m_processor.m_algo.getGainReduction();
+    repaint();
 }
