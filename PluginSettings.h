@@ -6,7 +6,7 @@ const bool g_forcePowerOf2(false); // should be true for FFT Processing
 
 // -------------- GUI -----------------
 // global GUI setting for Quetscher
-const int g_minGuiSize_x(500);
+const int g_minGuiSize_x(420);
 const int g_maxGuiSize_x(1200);
 const int g_minGuiSize_y(250);
 const float g_guiratio = float(g_minGuiSize_y)/g_minGuiSize_x;

@@ -71,12 +71,18 @@ int jade::CompressorAlgo::computeSidechainSignal(const juce::AudioBuffer<float> 
 
     // compressor curve
         float gain = computeGain(rms_log);
-
+        
     // smoothing att/rel
         if (gain < m_smoothedgain)
+        {
             m_smoothedgain = m_alpha_att*m_smoothedgain + (1.f - m_alpha_att)*gain;
+            m_gainreductionsmoothed = m_alpha_att*m_gainreductionsmoothed + (1.f - m_alpha_att)*m_gainreduction;
+        }
         else
+        {
             m_smoothedgain = m_alpha_rel*m_smoothedgain + (1.f - m_alpha_rel)*gain;
+            m_gainreductionsmoothed = m_alpha_rel*m_gainreductionsmoothed + (1.f - m_alpha_rel)*m_gainreduction;
+        }
 
     // lin
         sidechainptr[kk] = powf(10.f,m_smoothedgain/20.f);

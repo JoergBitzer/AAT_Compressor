@@ -24,7 +24,7 @@ public:
     void setReleaseTime_ms(float rel) {m_rel_tau_ms = rel; m_alpha_rel = tau2alpha(m_rel_tau_ms);};
     void setRMSSmoothing_ms(float tau) {m_tau_rms_ms = tau; m_alpha_rms = tau2alpha(m_tau_rms_ms);};
 
-
+    float getGainReduction(){return m_gainreductionsmoothed;};
 
 protected:
     float m_fs = 44100.f;
@@ -53,6 +53,11 @@ protected:
     float m_rmsold = 0.f;
     float m_smoothedgain = 0.f;
 
+    // gain reduction
+    float m_gainreduction = 0.f;
+    float m_gainreductionsmoothed = 0.f;
+    
+
     float computeGain(float input)
     {
         float output = 0.f;
@@ -67,6 +72,7 @@ protected:
         }        
         output += m_processmakeup;
         float gain = output - input;
+        m_gainreduction = m_processmakeup - gain;
         return gain;
     }
 };

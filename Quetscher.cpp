@@ -263,6 +263,7 @@ QuetscherGUI::QuetscherGUI(QuetscherAudioProcessor& p, juce::AudioProcessorValue
     addAndMakeVisible(m_RMSSlider);
     // m_RatioSlider.onValueChange = [this] {m_IRDisplay.setRatio(m_RatioSlider.getValue());};
 
+    startTimerHz(30);
 }
 
 void QuetscherGUI::paint(juce::Graphics &g)
@@ -274,6 +275,28 @@ void QuetscherGUI::paint(juce::Graphics &g)
     
     juce::String text2display = "Quetscher V " + juce::String(PLUGIN_VERSION_MAJOR) + "." + juce::String(PLUGIN_VERSION_MINOR) + "." + juce::String(PLUGIN_VERSION_PATCH);
     g.drawFittedText (text2display, getLocalBounds(), juce::Justification::bottomLeft, 1);
+
+    // Draw gain reduction
+    float scaleFac = m_processor.getScaleFactor();
+    int width = getWidth();
+    int height = getHeight();
+    int xStart = width - 60*scaleFac;
+    int yStart = 50*scaleFac;
+    int displayWidth = 30;
+    int displayHeight = height-yStart - 20*scaleFac;
+
+    g.setColour(juce::Colours::darkgrey.darker(0.5));
+    g.fillRect(xStart,yStart,displayWidth, displayHeight);
+
+    // draw reduction
+    g.setColour(juce::Colours::green.brighter(0.3));
+    const float maxGainRed = 30;
+    if (m_gainReduction>maxGainRed)
+        m_gainReduction = maxGainRed;
+    
+    float normGainRed = m_gainReduction/maxGainRed;
+
+    g.fillRect(xStart,yStart,displayWidth, static_cast<int>(displayHeight*normGainRed));
 
 }
 
@@ -312,4 +335,10 @@ void QuetscherGUI::resized()
     m_MakeupSwitch.setBounds(startx + 4*(knobwidth + distance_x) ,starty,buttonWidth,buttonHeight);
 
 
+}
+
+void QuetscherGUI::timerCallback()
+{
+    m_gainReduction = m_processor.m_algo.getGainReduction();
+    repaint();
 }
